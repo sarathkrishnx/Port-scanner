@@ -160,7 +160,7 @@ def ask():
     
         
 
-    usr_rep = input(f"Do you want to scan a single port scan or multiple port scan ? (single ( S )/multiple ( M ))")
+    usr_rep = input(f"Do you want a single port scan or multiple port scan ? (single ( S )/multiple ( M ))")
 
     if usr_rep in ['multiple','M','m'] :
         print("Enter starting and ending range of port : " )
