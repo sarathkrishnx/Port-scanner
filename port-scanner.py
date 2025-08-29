@@ -216,12 +216,12 @@ def single(hostip):
 
 def ask():
     
-    host = input("Enter target's IP Address : ")
+    host = input("Enter target's IP Address : ").strip()
 
     usr_rep = input(f"Do you want to scan a single port scan or multiple port scan ? (single ( S )/multiple ( M ))")
     startp = None
     endp = None
-    thread_number = 10
+    thread_number = 5
     
     if usr_rep in ['multiple','M','m'] :
         print("Enter starting and ending range of port : " )
@@ -250,11 +250,13 @@ def ask():
                 thread_end = thread_start + chunk_size - 1
                 
                 
-            t = threading.Thread(target=multi,args=(thread_start,thread_end+1,host))
+            t = threading.Thread(target=multi,args=(thread_start,thread_end,host))
             t.start()  
             
           
             Threads.append(t)
+        for t in Threads:
+            t.join()
                   
                  
                  
