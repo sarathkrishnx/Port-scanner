@@ -26,10 +26,10 @@ def banner_grab_http(hostip,port):
     s=socket.socket()
     hostname=socket.gethostbyname(hostip)
     s.connect((hostip,port))
-    request = f"HEAD / HTTP/1.1\r\nHost:{hostname}\r\n\r\n"
+    request = f" HEAD / HTTP/1.1\r\nHost:{hostname}\r\n\r\n"
     s.send(request.encode())
     
-    reply=s.recv(1024).decode()
+    reply=s.recv(4096).decode(errors="ignore")
     s.close()
     return reply
 
@@ -37,9 +37,11 @@ def banner_grabbing_ftp(hostip,port):
     
     s=socket.socket()
     s.connect((hostip,port))
-    reply=s.recv(1024).decode()
+    reply=s.recv(4096).decode(errors="ignore")
     s.close()
     return reply
+    
+        
     
 def check_anonymous_ftp(hostip,port):
     
@@ -72,9 +74,11 @@ def multi(start,end,host):
         s=socket.socket()
         s.settimeout(1)
         conn = s.connect_ex((host,p))
+        s.close()
         
         if conn == 0 :
             if p in port_services and p in [80,8080,443]:
+                
                 banner = banner_grab_http(host,p)
                 print("\n==============================")
                 print(f"Port: {p}")
@@ -82,18 +86,23 @@ def multi(start,end,host):
                 print("Banner:")
                 print(banner.strip())
                 print("==============================\n")
+                
             elif p in port_services and p == 21 :
-                banner=banner_grabbing_ftp(host,p)
-                print("\n==============================")
-                print(f"Port: {p}")
-                print(f"Service: {port_services[p]}")
-                print("Banner:")
-                print(banner.strip())
-                print("==============================\n")
-                print("checking Anonymous login...")
-                print(check_anonymous_ftp(host,p))
+                try:
+                    banner=banner_grabbing_ftp(host,p)
+                    print("\n==============================")
+                    print(f"Port: {p}")
+                    print(f"Service: {port_services[p]}")
+                    print("Banner:")
+                    print(banner.strip())
+                    print("==============================\n")
+                    print("checking Anonymous login...")
+                    print(check_anonymous_ftp(host,p))
+                except Exception as e:
+                    print(f"port {p} : open, couldn't grab banner")
                 
-                
+            else:
+                print(f"Port {p} : Open")
                 
                 
                 
