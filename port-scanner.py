@@ -94,9 +94,10 @@ def multi(start, end, host):
                     print(f"Status : Open")
                     print("Banner:")
                     print(banner.strip())
-                    print("==============================\n")
+                    
                     print("checking Anonymous login...")
                     print(check_anonymous_ftp(host, p))
+                    print("==============================\n")
                 except Exception as e:
                     print(f"port {p} : open, couldn't grab banner")
 
