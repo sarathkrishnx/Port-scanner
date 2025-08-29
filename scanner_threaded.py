@@ -93,6 +93,7 @@ def multi(start,end,host):
         s.close()
         
         if conn == 0 :
+            '''
             if p in port_services and p in [80,8080,443]:
                 
                 banner = banner_grab_http(host,p)
@@ -150,16 +151,16 @@ def multi(start,end,host):
                 except Exception as e:
                     print(f"port {p} : open, couldn't grab banner")
                     
-                
+                '''
                 
                     
                 
-            else:
-                print("\n==============================")
-                print(f"Port: {p}")
-                print(f"Service: {port_services[p]}")
-                print(f"Status : Open")
-                print("==============================\n")
+        
+            print("\n==============================")
+            print(f"Port: {p}")
+            print(f"Service: {port_services[p]}")
+            print(f"Status : Open")
+            print("==============================\n")
                 
                 
                 
@@ -182,6 +183,7 @@ def single(hostip):
 
 
     if conn == 0:
+        '''
         if port in port_services and port in [80,8080,443]:
             banner = banner_grab_http(hostip, port)
             print("\n==============================")
@@ -205,7 +207,8 @@ def single(hostip):
             print(f"Port {port}: open, services: {port_services[port]}")
                
         else:
-            print(f"Port is open")
+        '''
+        print(f"Port is open")
                 
     
     else:
@@ -221,7 +224,7 @@ def ask():
     usr_rep = input(f"Do you want to scan a single port scan or multiple port scan ? (single ( S )/multiple ( M ))")
     startp = None
     endp = None
-    thread_number = 5
+    thread_number = 10
     
     if usr_rep in ['multiple','M','m'] :
         print("Enter starting and ending range of port : " )
