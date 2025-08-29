@@ -22,7 +22,7 @@ domains = [".com", ".org", ".net", ".in", ".edu", ".gov", ".io"]
 
 def banner_grab_http(hostip,port):
     
-    print("banner portion")
+    
     s=socket.socket()
     hostname=socket.gethostbyname(hostip)
     s.connect((hostip,port))
@@ -61,6 +61,22 @@ def check_anonymous_ftp(hostip,port):
     except Exception as e:
         return f"FTP Error:{e}"
     
+def banner_grabbing_ssh(hostip,port):
+    
+    s=socket.socket()
+    s.connect((hostip,port))
+    
+    banner=s.recv(4096).decode(errors="ignore")
+    s.close()
+    
+    return banner
+
+def banner_grabbing_smtp(hostip,port):
+    s=socket.socket()
+    s.connect((hostip,port))
+    banner=s.recv(4096).decode(errors="ignore")
+    return banner
+    
     
     
         
@@ -88,6 +104,7 @@ def multi(start,end,host):
                 print("==============================\n")
                 
             elif p in port_services and p == 21 :
+                print(f"Port {p}: open, services: {port_services[p]}")
                 try:
                     banner=banner_grabbing_ftp(host,p)
                     print("\n==============================")
@@ -100,6 +117,38 @@ def multi(start,end,host):
                     print(check_anonymous_ftp(host,p))
                 except Exception as e:
                     print(f"port {p} : open, couldn't grab banner")
+                    
+            elif p in port_services and p == 22:
+                print(f"Port {p}: open, services: {port_services[p]}")
+                try:
+                    banner=banner_grabbing_ssh(host,p)
+                    print("\n==============================")
+                    print(f"Port: {p}")
+                    print(f"Service: {port_services[p]}")
+                    print("Banner:")
+                    print(banner.strip())
+                    print("==============================\n")
+                    
+                except Exception as e:
+                    print(f"port {p} : open, couldn't grab banner")
+                    
+            elif p in port_services and p == 25:
+                print(f"Port {p}: open, services: {port_services[p]}")
+                try:
+                    banner=banner_grabbing_smtp(host,p)
+                    print("\n==============================")
+                    print(f"Port: {p}")
+                    print(f"Service: {port_services[p]}")
+                    print("Banner:")
+                    print(banner.strip())
+                    print("==============================\n")
+                    
+                except Exception as e:
+                    print(f"port {p} : open, couldn't grab banner")
+                    
+                
+                
+                    
                 
             else:
                 print(f"Port {p} : Open")
@@ -143,6 +192,10 @@ def single(hostip):
             print("==============================\n")
             print("checking Anonymous login...")
             print(check_anonymous_ftp(hostip,port))
+            
+        elif port in port_services and port == 22:
+            print(f"Port {port}: open, services: {port_services[port]}")
+               
         else:
             print(f"Port is open")
                 
