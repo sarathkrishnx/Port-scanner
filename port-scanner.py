@@ -1,6 +1,6 @@
 import socket
 from ftplib import FTP
-
+import threading
 
 port_services={
     20: "FTP (Data)",
@@ -99,17 +99,19 @@ def multi(start,end,host):
                 print("\n==============================")
                 print(f"Port: {p}")
                 print(f"Service: {port_services[p]}")
+                print(f"Status : Open")
                 print("Banner:")
                 print(banner.strip())
                 print("==============================\n")
                 
             elif p in port_services and p == 21 :
-                print(f"Port {p}: open, services: {port_services[p]}")
+                
                 try:
                     banner=banner_grabbing_ftp(host,p)
                     print("\n==============================")
                     print(f"Port: {p}")
                     print(f"Service: {port_services[p]}")
+                    print(f"Status : Open")
                     print("Banner:")
                     print(banner.strip())
                     print("==============================\n")
@@ -119,12 +121,13 @@ def multi(start,end,host):
                     print(f"port {p} : open, couldn't grab banner")
                     
             elif p in port_services and p == 22:
-                print(f"Port {p}: open, services: {port_services[p]}")
+                
                 try:
                     banner=banner_grabbing_ssh(host,p)
                     print("\n==============================")
                     print(f"Port: {p}")
                     print(f"Service: {port_services[p]}")
+                    print(f"Status : Open")
                     print("Banner:")
                     print(banner.strip())
                     print("==============================\n")
@@ -133,12 +136,13 @@ def multi(start,end,host):
                     print(f"port {p} : open, couldn't grab banner")
                     
             elif p in port_services and p == 25:
-                print(f"Port {p}: open, services: {port_services[p]}")
+                
                 try:
                     banner=banner_grabbing_smtp(host,p)
                     print("\n==============================")
                     print(f"Port: {p}")
                     print(f"Service: {port_services[p]}")
+                    print(f"Status : Open")
                     print("Banner:")
                     print(banner.strip())
                     print("==============================\n")
@@ -151,7 +155,11 @@ def multi(start,end,host):
                     
                 
             else:
-                print(f"Port {p} : Open")
+                print("\n==============================")
+                print(f"Port: {p}")
+                print(f"Service: {port_services[p]}")
+                print(f"Status : Open")
+                print("==============================\n")
                 
                 
                 
@@ -208,33 +216,93 @@ def single(hostip):
 
 def ask():
     
-    host = (input("Enter target's IP Address or Domain name  : "))
-    
-    host = host.strip().lower()
-    is_domain = False
-    for sx in domains:
-        if host.endswith(sx):
-            is_domain=True
-            break
-    if is_domain == True :
-        host=socket.gethostbyname(host)
-        print(f" Domain ip : {host}")
-    
-        
+    host = input("Enter target's IP Address : ")
 
-    usr_rep = input(f"Do you want a single port scan or multiple port scan ? (single ( S )/multiple ( M ))")
-
+    usr_rep = input(f"Do you want to scan a single port scan or multiple port scan ? (single ( S )/multiple ( M ))")
+    startp = None
+    endp = None
+    thread_number = 10
+    
     if usr_rep in ['multiple','M','m'] :
         print("Enter starting and ending range of port : " )
         startp=int(input("Enter starting port : " ))
         endp=int(input("Enter ending port : " ))
-        multi(startp,endp,host)
-    
+        
+        
+        
+        
+        totalport = endp - startp + 1
+        chunk_size = totalport // thread_number
+        
+        
+        
+        Threads = []
+        
+        for i in range (thread_number):
+            
+            thread_start = startp + i * chunk_size
+            
+            if i == thread_number - 1:
+                
+                thread_end = endp
+            else:
+                
+                thread_end = thread_start + chunk_size - 1
+                
+                
+            t = threading.Thread(target=multi,args=(thread_start,thread_end+1,host))
+            t.start()  
+            
+          
+            Threads.append(t)
+                  
+                 
+                 
+        
+        '''
+        thread2 = threading.Thread(target=multi,args=(thread_start,thread_end,host))
+        thread3 = threading.Thread(target=multi,args=(thread_start,thread_end,host))
+        
+        thread1.start()
+        thread2.start()
+        thread3.start()
+        
+        thread1.join()
+        thread2.join()
+        thread3.join()
+'''
+        
     else:
     
         single(host)
         
-ask()
+    return startp,endp,host
+        
+startp,endp,hostip = ask()
+
+
+
+'''
+print("flag1")
+thread1 = threading.Thread(target=multi,args=(startp,endp,hostip))
+thread2 = threading.Thread(target=multi,args=(startp,endp,hostip))
+thread3 = threading.Thread(target=multi,args=(startp,endp,hostip))
+
+print("flag2")
+
+thread1.start()
+thread2.start()
+thread3.start()
+
+
+
+
+thread1.join()
+thread2.join()
+thread3.join()
+
+print("flag3")
+'''
 
     
         
